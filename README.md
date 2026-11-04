@@ -46,7 +46,125 @@ The application is structured into three specialized studios accessible via the 
 * **Battery Diagnostics & Air-Gapped QR Generator:** Real-time battery temperature, charging voltage, health diagnostics, and an air-gapped QR generator/scanner for sharing text and payloads offline.
 
 ---
-
+## OmniShield Suite Architectural Diagram
+```text
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                  OMNISHIELD SUITE ARCHITECTURE                                  │
+│             100% Offline • Zero-Cloud • Clean MVVM Architecture • Air-Gapped Security           │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+                                                │
+                                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                               PRESENTATION LAYER (JETPACK COMPOSE UI)                           │
+├───────────────────────────────┬───────────────────────────────┬─────────────────────────────────┤
+│  SECURITY & CRYPTO STUDIO     │   DOCUMENTS & MEDIA STUDIO    │   HARDWARE & RADIOS STUDIO      │
+│  • AES-256-GCM File Vault     │   • PDF Studio (Merge/Split)  │   • Zero-Cloud P2P AirBeam      │
+│  • Duress Decoy PIN Notes     │   • Target-Size Compressor    │   • LAN Subnet & ARP Scanner    │
+│  • JWT & X.509 Cert Inspector │   • Level-9 Lossless ZIP      │   • Open Socket / Port Checker  │
+│  • DoD 5220.22-M Shredder     │   • Binary Hex Byte Viewer    │   • NFC Tag Toolkit & Vault     │
+│  • Shannon Entropy Analyzer   │   • JSON / XML / YAML Conv    │   • Universal IR Remote Blaster │
+├───────────────────────────────┴───────────────────────────────┴─────────────────────────────────┤
+│                Unidirectional Data Flow: UI State ◄══ StateFlow ══► User Events                 │
+└───────────────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                                │
+                                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                VIEWMODEL & STATE ORCHESTRATION LAYER                            │
+│   • CryptoViewModel          • NotesVaultViewModel          • NetworkStudioViewModel            │
+│   • PdfStudioViewModel       • FileConverterViewModel       • NfcViewModel / IrViewModel        │
+│   • TokenInspectorViewModel  • SecurityStudioViewModel      • HardwareStudioViewModel           │
+└───────────────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                                │
+                                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                DOMAIN & REPOSITORY ABSTRACTION LAYER                            │
+│   • ICryptoRepository        • IFileConverterRepository     • IMetadataRepository               │
+│   • Scoped Storage Access    • Model Data Contracts         • Duress Vault State Machine        │
+└───────────────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                                │
+                                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                   CORE ON-DEVICE NATIVE ENGINES                                 │
+├───────────────────────┬────────────────────────┬───────────────────────┬────────────────────────┤
+│  CRYPTOGRAPHIC CORE   │    DOCUMENT & MEDIA    │    NETWORK & P2P      │    HARDWARE DRIVERS    │
+│ • AES-256-GCM Cipher  │ • Android PdfDocument  │ • TCP ServerSocket    │ • NfcAdapter Driver    │
+│ • PBKDF2 (10k rounds) │ • PdfRenderer Engine   │ • Streamed AES Cipher │ • NDEF Read & Write    │
+│ • Android KeyStore    │ • Target-Budget Search │ • ICMP Subnet Ping    │ • ConsumerIrManager    │
+│ • Offline JWT Parser  │ • Deflater Level-9 ZIP │ • /proc/net/arp Table │ • 38 kHz NEC Carrier   │
+│ • Shannon Entropy Math│ • ExifInterface Scrub  │ • Socket Port Prober  │ • BatteryManager       │
+└───────────────────────┴────────────────────────┴───────────────────────┴────────────────────────┘
+                                                │
+                                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                               ANDROID OS RUNTIME & PHYSICAL PERIPHERALS                         │
+├───────────────────────┬────────────────────────┬───────────────────────┬────────────────────────┤
+│  FILESYSTEM & SAF     │     MEDIA PIPELINES    │ LOCAL WI-FI / HOTSPOT │    PHYSICAL RADIOS     │
+│ • Scoped App Sandbox  │ • Bitmap Quantization  │ • Raw TCP Sockets     │ • NFC Controller Loop  │
+│ • Hardware Keystore   │ • Native PDF Surface   │ • Subnet ARP Discovery│ • Infrared (IR) LED    │
+│ • Zero Memory Leak    │ • Binary File Streams  │ • Zero-Cloud AirBeam  │ • Battery Thermals     │
+└───────────────────────┴────────────────────────┴───────────────────────┴────────────────────────┘
+```
+### Detailed Subsystem: The Duress Decoy PIN & Cryptographic Pipeline
+```text
+                   ┌──────────────────────────────────────────────┐
+                   │           User Enters 6-Digit PIN            │
+                   └──────────────────────┬───────────────────────┘
+                                          │
+                                          ▼
+                   ┌──────────────────────────────────────────────┐
+                   │    SHA-256 PIN Comparison & Key Derivation   │
+                   │    PBKDF2WithHmacSHA256 (10,000 Iterations)  │
+                   └──────┬────────────────────────────────┬──────┘
+                          │                                │
+            Matches Master PIN?              Matches Duress PIN?
+                          │                                │
+                          ▼                                ▼
+       ┌────────────────────────────────────┐   ┌────────────────────────────────────┐
+       │      MASTER ENCRYPTED VAULT        │   │        DECOY PLAUSIBLE VAULT       │
+       │  • AES-256-GCM Decryption Stream   │   │  • Decoy Seed Phrase Records       │
+       │  • Real SSH Keys & Crypto Seeds    │   │  • Plausible Non-Critical Notes    │
+       │  • Authenticated GCM Tag Verified  │   │  • Zero Reference to True Secrets  │
+       └──────────────────┬─────────────────┘   └──────────────────┬─────────────────┘
+                          │                                        │
+                          └───────────────────┬────────────────────┘
+                                              │
+                                              ▼
+                               ┌─────────────────────────────┐
+                               │     Decrypted UI State      │
+                               │  (Held in Volatile Memory;  │
+                               │   Cleared on Screen Exit)   │
+                               └─────────────────────────────┘
+```
+### Detailed Subsystem: File Converter & Target-Size Budget Reduction
+```text
+┌─────────────────────────────────┐
+│     High-Res Input Image        │
+│    (Camera Capture / Gallery)   │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│    Binary Search Loop           │
+│    Target File Budget (e.g. 500KB)
+│    • Iterative Quality Factor   │
+│    • Preserves Aspect Ratio     │
+│    • Compresses via WebP / JPEG │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│  Target Size Achieved? (≤ 500KB)│
+├────────────────┬────────────────┤
+│ YES            │ NO             │
+│ (Quality OK)   │ (Step Down Dim)│
+└────────┬───────┴────────┬───────┘
+         │                │
+         ▼                ▼
+┌─────────────────┐ ┌─────────────────────────────────────────┐
+│ Output Document │ │ Downscale Dimensions by 15% & Re-quantize│
+└─────────────────┘ └─────────────────────────────────────────┘
+```
+---
 ## 👥 Target Audience
 
 | User Profile | Primary Use Case |
@@ -63,3 +181,57 @@ The application is structured into three specialized studios accessible via the 
 * **Language & Architecture:** 100% Kotlin with Clean Architecture, MVVM design pattern, and Kotlin Coroutines/Flows.
 * **User Interface:** Jetpack Compose with Material 3, Dark Cyber-Security aesthetic, dynamic accent palettes, and haptic feedback.
 * **Security & Cryptography:** Android Keystore Provider, `javax.crypto` (`AES/GCM/NoPadding`), `PBKDF2WithHmacSHA256`, and SHA-256/SHA-512 digest algorithms.
+
+## ⚙️ GitHub Installation & Build Guide
+
+### Prerequisites
+
+* **Operating System:** Windows 10/11, macOS, or Linux.
+* **Android Studio:** Android Studio Ladybug (2024.2+) or Meerkat with Android SDK Platform 34/35/37 installed.
+* **Java Development Kit:** JDK 21 (uses the bundled JetBrains Runtime `jbr` from Android Studio).
+* **Target Hardware:** Android phone or emulator running Android 8.0 (API 26) or higher.
+
+---
+
+### Step 1: Clone the Repository
+Open a terminal (PowerShell, Command Prompt, or bash) and clone the source code:
+```bash
+git clone https://github.com/PawanYadav33845/omnishield.git 
+```
+### Step 2: Configure Environment Paths
+Make sure JAVA_HOME points to your JDK 21 installation (or Android Studio's bundled JBR).
+```Windows (PowerShell):
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
+$env:Path = "$env:JAVA_HOME\bin;$env:LOCALAPPDATA\Android\Sdk\platform-tools;$env:Path"
+```
+```macos/linux
+export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" # macOS
+export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH"
+```
+Create or verify the local.properties file in the project root:
+```
+sdk.dir=C\:\\Users\\<your-username>\\AppData\\Local\\Android\\Sdk
+```
+### Step 3: Build the Application via CLI or IDE
+Option A: Build via Command Line
+Run the Gradle wrapper to build the debug APK:
+```Windows
+.\gradlew.bat :androidApp:assembleDebug
+```
+```macos/linus
+./gradlew :androidApp:assembleDebug
+```
+### Option B: Build & Run via Android Studio GUI
+* Launch Android Studio.
+* Select File -> Open... and select the root directory of this repository.
+* Allow Gradle Sync to finish downloading dependencies.
+* Select the androidApp run configuration at the top toolbar.
+* Click Run (Shift + F10) to compile and launch directly on your connected device or emulator.
+
+### Step 4: Install to Device via ADB
+Connect your Android phone with USB Debugging enabled (or launch an Android Virtual Device from Device Manager):
+```bash
+adb devices
+adb install -r androidApp/build/outputs/apk/debug/androidApp-debug.apk
+adb shell am start -n com.omnishield.utility/.presentation.MainActivity
+```
